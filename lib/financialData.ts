@@ -1,146 +1,263 @@
-export interface StockData {
-  date: string;
-  price: number;
-  volume: number;
-}
+// ─── Portfolio Summary ───────────────────────────────────────────────────────
 
-export interface PortfolioAsset {
-  symbol: string;
-  name: string;
-  shares: number;
-  price: number;
-  change: number;
-}
+export const portfolioSummary = {
+  totalValue: 1_284_530,
+  dailyChange: 8_342,
+  dailyChangePct: 0.65,
+  weeklyChangePct: 2.14,
+  monthlyChangePct: 5.87,
+  ytdChangePct: 18.43,
+  totalGain: 284_530,
+  totalGainPct: 28.45,
+};
 
-export interface PerformanceMetric {
-  label: string;
-  value: number;
-  percentage: number;
-  trend: 'up' | 'down';
-}
+// ─── Portfolio Cards ──────────────────────────────────────────────────────────
 
-// 기준 가격에서 랜덤 워크로 시계열 생성
-function generatePriceSeries(
-  count: number,
-  basePrice: number,
+export const portfolioCards = [
+  {
+    title: "Total Portfolio Value",
+    value: "$1,284,530",
+    change: "+$8,342",
+    changePct: "+0.65%",
+    positive: true,
+    icon: "💰",
+    description: "Total assets under management",
+  },
+  {
+    title: "Today's P&L",
+    value: "+$8,342",
+    change: "vs yesterday",
+    changePct: "+0.65%",
+    positive: true,
+    icon: "📈",
+    description: "Profit & Loss for today",
+  },
+  {
+    title: "Monthly Return",
+    value: "+5.87%",
+    change: "+$71,324",
+    changePct: "This month",
+    positive: true,
+    icon: "📊",
+    description: "Return on investment this month",
+  },
+  {
+    title: "Risk Score",
+    value: "6.4 / 10",
+    change: "Moderate",
+    changePct: "Risk Level",
+    positive: null,
+    icon: "⚖️",
+    description: "Portfolio risk assessment",
+  },
+];
+
+// ─── Stock / Price Data ───────────────────────────────────────────────────────
+
+function generatePriceData(
+  base: number,
+  days: number,
   volatility: number
 ): number[] {
-  const prices: number[] = [basePrice];
-  for (let i = 1; i < count; i++) {
+  const prices: number[] = [base];
+  for (let i = 1; i < days; i++) {
     const change = (Math.random() - 0.48) * volatility;
-    prices.push(Math.round((prices[i - 1] + change) * 100) / 100);
+    prices.push(Math.max(1, prices[i - 1] + change));
   }
-  return prices;
+  return prices.map((p) => Math.round(p * 100) / 100);
 }
 
-// 볼륨 시리즈 생성
-function generateVolumeSeries(count: number, baseVolume: number): number[] {
-  return Array.from({ length: count }, () =>
-    Math.round(baseVolume * (0.5 + Math.random()))
-  );
+function generateLabels(days: number): string[] {
+  const labels: string[] = [];
+  const now = new Date(2026, 3, 28); // April 28, 2026
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    labels.push(
+      d.toLocaleDateString("en-US", { month: "short", day: "numeric" })
+    );
+  }
+  return labels;
 }
 
-// ── 1D: 9시~18시 1시간 간격 (10개 데이터 포인트) ──
-const hours1D = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
-const prices1D = generatePriceSeries(hours1D.length, 35000, 300);
-const volumes1D = generateVolumeSeries(hours1D.length, 500000);
+const DAYS_365 = 365;
+const labels365 = generateLabels(DAYS_365);
 
-export const stockData1D: StockData[] = hours1D.map((h, i) => ({
-  date: h,
-  price: prices1D[i],
-  volume: volumes1D[i],
-}));
+export const stockDatasets: Record<
+  string,
+  { name: string; ticker: string; prices: number[]; labels: string[]; color: string }
+> = {
+  AAPL: {
+    name: "Apple Inc.",
+    ticker: "AAPL",
+    prices: generatePriceData(165, DAYS_365, 3.5),
+    labels: labels365,
+    color: "#3b82f6",
+  },
+  MSFT: {
+    name: "Microsoft Corp.",
+    ticker: "MSFT",
+    prices: generatePriceData(380, DAYS_365, 6),
+    labels: labels365,
+    color: "#8b5cf6",
+  },
+  GOOGL: {
+    name: "Alphabet Inc.",
+    ticker: "GOOGL",
+    prices: generatePriceData(140, DAYS_365, 4),
+    labels: labels365,
+    color: "#10b981",
+  },
+  AMZN: {
+    name: "Amazon.com Inc.",
+    ticker: "AMZN",
+    prices: generatePriceData(180, DAYS_365, 5),
+    labels: labels365,
+    color: "#f59e0b",
+  },
+  TSLA: {
+    name: "Tesla Inc.",
+    ticker: "TSLA",
+    prices: generatePriceData(250, DAYS_365, 12),
+    labels: labels365,
+    color: "#ef4444",
+  },
+  NVDA: {
+    name: "NVIDIA Corp.",
+    ticker: "NVDA",
+    prices: generatePriceData(850, DAYS_365, 25),
+    labels: labels365,
+    color: "#06b6d4",
+  },
+};
 
-// ── 1W: 최근 7일 ──
-const prices1W = generatePriceSeries(7, 34500, 600);
-const volumes1W = generateVolumeSeries(7, 1200000);
+export type TimePeriod = "1W" | "1M" | "3M" | "6M" | "1Y";
 
-export const stockData1W: StockData[] = Array.from({ length: 7 }, (_, i) => {
-  const d = new Date();
-  d.setDate(d.getDate() - (6 - i));
-  return {
-    date: `${d.getMonth() + 1}/${d.getDate()}`,
-    price: prices1W[i],
-    volume: volumes1W[i],
-  };
-});
+export const timePeriodDays: Record<TimePeriod, number> = {
+  "1W": 7,
+  "1M": 30,
+  "3M": 90,
+  "6M": 180,
+  "1Y": 365,
+};
 
-// ── 1M: 최근 30일 ──
-const prices1M = generatePriceSeries(30, 33800, 500);
-const volumes1M = generateVolumeSeries(30, 1300000);
+// ─── Asset Allocation ─────────────────────────────────────────────────────────
 
-export const stockData1M: StockData[] = Array.from({ length: 30 }, (_, i) => {
-  const d = new Date();
-  d.setDate(d.getDate() - (29 - i));
-  return {
-    date: `${d.getMonth() + 1}/${d.getDate()}`,
-    price: prices1M[i],
-    volume: volumes1M[i],
-  };
-});
+export type AllocationCategory = "all" | "equity" | "fixed" | "alternative";
 
-// ── 3M: 최근 90일 (5일 단위 레이블) ──
-const prices3M = generatePriceSeries(90, 31000, 450);
-const volumes3M = generateVolumeSeries(90, 1400000);
+export const assetAllocation: Record<
+  AllocationCategory,
+  { labels: string[]; values: number[]; colors: string[] }
+> = {
+  all: {
+    labels: ["US Stocks", "Int'l Stocks", "Bonds", "Real Estate", "Commodities", "Cash"],
+    values: [42, 18, 22, 8, 6, 4],
+    colors: ["#3b82f6", "#8b5cf6", "#10b981", "#f59e0b", "#ef4444", "#64748b"],
+  },
+  equity: {
+    labels: ["US Large Cap", "US Mid Cap", "US Small Cap", "Developed Markets", "Emerging Markets"],
+    values: [45, 20, 10, 15, 10],
+    colors: ["#1d4ed8", "#3b82f6", "#60a5fa", "#8b5cf6", "#a78bfa"],
+  },
+  fixed: {
+    labels: ["US Treasury", "Corporate IG", "Corporate HY", "TIPS", "Intl Bonds"],
+    values: [35, 28, 15, 12, 10],
+    colors: ["#065f46", "#059669", "#10b981", "#34d399", "#6ee7b7"],
+  },
+  alternative: {
+    labels: ["REITs", "Gold", "Oil & Gas", "Crypto", "Hedge Funds"],
+    values: [35, 25, 20, 12, 8],
+    colors: ["#92400e", "#d97706", "#f59e0b", "#fbbf24", "#fde68a"],
+  },
+};
 
-export const stockData3M: StockData[] = Array.from({ length: 90 }, (_, i) => {
-  const d = new Date();
-  d.setDate(d.getDate() - (89 - i));
-  return {
-    date: i % 5 === 0 ? `${d.getMonth() + 1}/${d.getDate()}` : '',
-    price: prices3M[i],
-    volume: volumes3M[i],
-  };
-});
+// ─── Performance Bar Chart ────────────────────────────────────────────────────
 
-// ── 1Y: 최근 12개월 (월별) ──
-const monthNames = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
-const prices1Y = generatePriceSeries(12, 28500, 1200);
-const volumes1Y = generateVolumeSeries(12, 1800000);
+export type PerformancePeriod = "monthly" | "quarterly" | "yearly";
 
-const now = new Date();
-export const stockData1Y: StockData[] = Array.from({ length: 12 }, (_, i) => {
-  const d = new Date(now.getFullYear(), now.getMonth() - (11 - i), 1);
-  return {
-    date: monthNames[d.getMonth()],
-    price: prices1Y[i],
-    volume: volumes1Y[i],
-  };
-});
+export const performanceData: Record<
+  PerformancePeriod,
+  { labels: string[]; portfolio: number[]; benchmark: number[] }
+> = {
+  monthly: {
+    labels: ["Nov", "Dec", "Jan", "Feb", "Mar", "Apr"],
+    portfolio: [2.1, 3.4, -1.2, 4.8, 2.9, 5.87],
+    benchmark: [1.8, 2.9, -0.8, 3.5, 2.1, 4.2],
+  },
+  quarterly: {
+    labels: ["Q3 2025", "Q4 2025", "Q1 2026"],
+    portfolio: [6.8, 9.1, 8.4],
+    benchmark: [5.2, 7.6, 6.9],
+  },
+  yearly: {
+    labels: ["2022", "2023", "2024", "2025", "2026 YTD"],
+    portfolio: [-12.4, 22.7, 18.9, 31.2, 8.4],
+    benchmark: [-14.1, 19.3, 15.6, 26.8, 6.9],
+  },
+};
 
-// 기본 주가 데이터 (1Y와 동일)
-export const stockPriceData: StockData[] = stockData1Y;
+// ─── Admin – Users ────────────────────────────────────────────────────────────
 
-// 포트폴리오 자산
-export const portfolioAssets: PortfolioAsset[] = [
-  { symbol: 'AAPL', name: 'Apple Inc.', shares: 50, price: 180.50, change: 2.45 },
-  { symbol: 'GOOGL', name: 'Alphabet Inc.', shares: 30, price: 140.25, change: 1.85 },
-  { symbol: 'MSFT', name: 'Microsoft Corp.', shares: 40, price: 380.50, change: 3.12 },
-  { symbol: 'TSLA', name: 'Tesla Inc.', shares: 25, price: 242.80, change: -1.50 },
-  { symbol: 'AMZN', name: 'Amazon.com Inc.', shares: 20, price: 175.60, change: 2.75 },
+export const adminUsers = [
+  {
+    id: 1,
+    name: "Alex Johnson",
+    email: "alex.johnson@finco.com",
+    role: "Admin",
+    status: "Active",
+    lastLogin: "2026-04-28",
+    portfolioValue: "$4.2M",
+  },
+  {
+    id: 2,
+    name: "Sarah Chen",
+    email: "sarah.chen@finco.com",
+    role: "Analyst",
+    status: "Active",
+    lastLogin: "2026-04-28",
+    portfolioValue: "$1.8M",
+  },
+  {
+    id: 3,
+    name: "Michael Torres",
+    email: "m.torres@finco.com",
+    role: "Trader",
+    status: "Active",
+    lastLogin: "2026-04-27",
+    portfolioValue: "$2.9M",
+  },
+  {
+    id: 4,
+    name: "Emily Park",
+    email: "emily.park@finco.com",
+    role: "Analyst",
+    status: "Inactive",
+    lastLogin: "2026-04-20",
+    portfolioValue: "$890K",
+  },
+  {
+    id: 5,
+    name: "James Wilson",
+    email: "j.wilson@finco.com",
+    role: "Viewer",
+    status: "Active",
+    lastLogin: "2026-04-26",
+    portfolioValue: "$560K",
+  },
+  {
+    id: 6,
+    name: "Lisa Rodriguez",
+    email: "l.rodriguez@finco.com",
+    role: "Trader",
+    status: "Active",
+    lastLogin: "2026-04-28",
+    portfolioValue: "$3.1M",
+  },
 ];
 
-// 성과 메트릭
-export const performanceMetrics: PerformanceMetric[] = [
-  { label: '총 자산', value: 145250, percentage: 15.8, trend: 'up' },
-  { label: '일일 수익', value: 2150, percentage: 2.1, trend: 'up' },
-  { label: '월간 수익', value: 12850, percentage: 9.7, trend: 'up' },
-  { label: '연간 수익률', value: 24.5, percentage: 5.3, trend: 'down' },
-];
-
-// 자산 배분 데이터
-export const assetAllocation = [
-  { name: '주식', value: 65, color: '#3b82f6' },
-  { name: '채권', value: 20, color: '#10b981' },
-  { name: '부동산', value: 10, color: '#f59e0b' },
-  { name: '현금', value: 5, color: '#6366f1' },
-];
-
-// 산업별 분포
-export const industryDistribution = [
-  { name: '기술', value: 35 },
-  { name: '금융', value: 20 },
-  { name: '헬스케어', value: 15 },
-  { name: '소비재', value: 15 },
-  { name: '에너지', value: 15 },
+export const adminStats = [
+  { title: "Total Users", value: "128", change: "+12 this month", icon: "👥" },
+  { title: "Active Sessions", value: "43", change: "Right now", icon: "🟢" },
+  { title: "Total AUM", value: "$284.5M", change: "+5.2% MTD", icon: "🏦" },
+  { title: "Alerts Today", value: "7", change: "3 critical", icon: "🔔" },
 ];
