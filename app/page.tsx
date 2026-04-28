@@ -16,7 +16,7 @@ export default function DashboardPage() {
             포트폴리오 현황
           </h1>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            2026년 4월 28일 &mdash; 마지막 업데이트: 오후 12:29 (KST)
+            마지막 업데이트: {new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })}
           </p>
         </div>
 
