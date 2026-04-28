@@ -3,8 +3,8 @@ import "./globals.css";
 import { ThemeProvider } from "../lib/theme-context";
 
 export const metadata: Metadata = {
-  title: "FinDash – Financial Analytics Dashboard",
-  description: "Professional financial analytics dashboard built with Next.js",
+  title: "FinDash – 금융 분석 대시보드",
+  description: "Next.js 기반 금융 분석 대시보드 데모",
 };
 
 export default function RootLayout({
@@ -13,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="ko" suppressHydrationWarning>
       <body>
         <ThemeProvider>{children}</ThemeProvider>
       </body>

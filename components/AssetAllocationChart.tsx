@@ -14,10 +14,10 @@ import { useTheme } from "../lib/theme-context";
 Chart.register(DoughnutController, ArcElement, Tooltip, Legend);
 
 const CATEGORIES: { value: AllocationCategory; label: string }[] = [
-  { value: "all", label: "All Assets" },
-  { value: "equity", label: "Equity" },
-  { value: "fixed", label: "Fixed Income" },
-  { value: "alternative", label: "Alternatives" },
+  { value: "all", label: "전체" },
+  { value: "equity", label: "주식" },
+  { value: "fixed", label: "채권" },
+  { value: "alternative", label: "대체자산" },
 ];
 
 export default function AssetAllocationChart() {
@@ -59,12 +59,7 @@ export default function AssetAllocationChart() {
         plugins: {
           legend: {
             position: "right",
-            labels: {
-              color: textColor,
-              font: { size: 11 },
-              boxWidth: 12,
-              padding: 12,
-            },
+            labels: { color: textColor, font: { size: 11 }, boxWidth: 12, padding: 12 },
           },
           tooltip: {
             backgroundColor: isDark ? "#1e293b" : "#ffffff",
@@ -89,18 +84,16 @@ export default function AssetAllocationChart() {
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-      {/* Header */}
       <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="text-base font-semibold text-slate-900 dark:text-white">
-            Asset Allocation
+            자산 배분
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Portfolio composition breakdown
+            포트폴리오 구성 비중
           </p>
         </div>
 
-        {/* Category filter */}
         <div className="flex flex-wrap gap-1.5">
           {CATEGORIES.map((c) => (
             <button
@@ -118,7 +111,6 @@ export default function AssetAllocationChart() {
         </div>
       </div>
 
-      {/* Chart */}
       <div className="h-64">
         <canvas ref={canvasRef} />
       </div>

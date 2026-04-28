@@ -13,19 +13,12 @@ import {
 import { performanceData, PerformancePeriod } from "../lib/financialData";
 import { useTheme } from "../lib/theme-context";
 
-Chart.register(
-  BarController,
-  BarElement,
-  LinearScale,
-  CategoryScale,
-  Tooltip,
-  Legend
-);
+Chart.register(BarController, BarElement, LinearScale, CategoryScale, Tooltip, Legend);
 
 const PERIODS: { value: PerformancePeriod; label: string }[] = [
-  { value: "monthly", label: "Monthly" },
-  { value: "quarterly", label: "Quarterly" },
-  { value: "yearly", label: "Yearly" },
+  { value: "monthly", label: "월별" },
+  { value: "quarterly", label: "분기별" },
+  { value: "yearly", label: "연도별" },
 ];
 
 export default function PerformanceChart() {
@@ -53,26 +46,20 @@ export default function PerformanceChart() {
         labels: data.labels,
         datasets: [
           {
-            label: "My Portfolio",
+            label: "내 포트폴리오",
             data: data.portfolio,
             backgroundColor: data.portfolio.map((v) =>
               v >= 0
-                ? isDark
-                  ? "rgba(59,130,246,0.8)"
-                  : "rgba(59,130,246,0.85)"
-                : isDark
-                ? "rgba(239,68,68,0.8)"
-                : "rgba(239,68,68,0.85)"
+                ? isDark ? "rgba(59,130,246,0.8)" : "rgba(59,130,246,0.85)"
+                : isDark ? "rgba(239,68,68,0.8)" : "rgba(239,68,68,0.85)"
             ),
             borderRadius: 4,
             borderSkipped: false,
           },
           {
-            label: "Benchmark (S&P 500)",
+            label: "벤치마크 (S&P 500)",
             data: data.benchmark,
-            backgroundColor: isDark
-              ? "rgba(148,163,184,0.4)"
-              : "rgba(148,163,184,0.5)",
+            backgroundColor: isDark ? "rgba(148,163,184,0.4)" : "rgba(148,163,184,0.5)",
             borderRadius: 4,
             borderSkipped: false,
           },
@@ -83,11 +70,7 @@ export default function PerformanceChart() {
         maintainAspectRatio: false,
         plugins: {
           legend: {
-            labels: {
-              color: textColor,
-              font: { size: 12 },
-              boxWidth: 12,
-            },
+            labels: { color: textColor, font: { size: 12 }, boxWidth: 12 },
           },
           tooltip: {
             backgroundColor: isDark ? "#1e293b" : "#ffffff",
@@ -127,19 +110,17 @@ export default function PerformanceChart() {
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-      {/* Header */}
       <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="text-base font-semibold text-slate-900 dark:text-white">
-            Performance vs Benchmark
+            벤치마크 대비 수익률
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Portfolio returns compared to S&P 500
+            S&P 500 대비 포트폴리오 성과
           </p>
         </div>
 
-        {/* Period filter */}
-        <div className="flex rounded-lg border border-slate-200 dark:border-slate-600 overflow-hidden">
+        <div className="flex overflow-hidden rounded-lg border border-slate-200 dark:border-slate-600">
           {PERIODS.map((p) => (
             <button
               key={p.value}
@@ -156,7 +137,6 @@ export default function PerformanceChart() {
         </div>
       </div>
 
-      {/* Chart */}
       <div className="h-64">
         <canvas ref={canvasRef} />
       </div>

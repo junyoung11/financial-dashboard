@@ -27,7 +27,7 @@ Chart.register(
 );
 
 const TICKERS = Object.keys(stockDatasets) as (keyof typeof stockDatasets)[];
-const PERIODS: TimePeriod[] = ["1W", "1M", "3M", "6M", "1Y"];
+const PERIODS: TimePeriod[] = ["1주", "1개월", "3개월", "6개월", "1년"];
 
 export default function StockChart() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -35,7 +35,7 @@ export default function StockChart() {
   const { theme } = useTheme();
 
   const [selectedTicker, setSelectedTicker] = useState<string>("AAPL");
-  const [period, setPeriod] = useState<TimePeriod>("3M");
+  const [period, setPeriod] = useState<TimePeriod>("3개월");
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -74,18 +74,11 @@ export default function StockChart() {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        interaction: {
-          mode: "index",
-          intersect: false,
-        },
+        interaction: { mode: "index", intersect: false },
         plugins: {
           legend: {
             display: true,
-            labels: {
-              color: textColor,
-              font: { size: 12 },
-              boxWidth: 12,
-            },
+            labels: { color: textColor, font: { size: 12 }, boxWidth: 12 },
           },
           tooltip: {
             backgroundColor: isDark ? "#1e293b" : "#ffffff",
@@ -102,11 +95,7 @@ export default function StockChart() {
         scales: {
           x: {
             grid: { color: gridColor },
-            ticks: {
-              color: textColor,
-              maxTicksLimit: 8,
-              font: { size: 11 },
-            },
+            ticks: { color: textColor, maxTicksLimit: 8, font: { size: 11 } },
           },
           y: {
             grid: { color: gridColor },
@@ -128,20 +117,18 @@ export default function StockChart() {
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-      {/* Header */}
       <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="text-base font-semibold text-slate-900 dark:text-white">
-            Stock Price
+            주가 차트
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Historical price chart
+            종목별 가격 추이
           </p>
         </div>
 
-        {/* Filters */}
         <div className="flex flex-wrap items-center gap-2">
-          {/* Ticker selector */}
+          {/* 종목 선택 */}
           <select
             value={selectedTicker}
             onChange={(e) => setSelectedTicker(e.target.value)}
@@ -154,8 +141,8 @@ export default function StockChart() {
             ))}
           </select>
 
-          {/* Period buttons */}
-          <div className="flex rounded-lg border border-slate-200 dark:border-slate-600 overflow-hidden">
+          {/* 기간 버튼 */}
+          <div className="flex overflow-hidden rounded-lg border border-slate-200 dark:border-slate-600">
             {PERIODS.map((p) => (
               <button
                 key={p}
@@ -173,7 +160,6 @@ export default function StockChart() {
         </div>
       </div>
 
-      {/* Chart */}
       <div className="h-72">
         <canvas ref={canvasRef} />
       </div>
