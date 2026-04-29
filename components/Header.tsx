@@ -10,7 +10,7 @@ export default function Header() {
 
   const navItems = [
     { href: "/", label: "대시보드" },
-    { href: "/admin", label: "관리자" },
+    { href: "/admin", label: "관리자 모드" },
   ];
 
   return (
@@ -23,10 +23,10 @@ export default function Header() {
           </div>
           <div>
             <p className="text-base font-bold leading-none text-slate-900 dark:text-white">
-              FinDash
+              Finance Dashboard
             </p>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              금융 분석 플랫폼
+              금융 데이터 분석 플랫폼
             </p>
           </div>
         </div>
