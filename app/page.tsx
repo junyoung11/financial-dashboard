@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import PortfolioCards from "../components/PortfolioCards";
 
@@ -9,6 +10,27 @@ const AssetAllocationChart = dynamic(() => import("../components/AssetAllocation
 const PerformanceChart = dynamic(() => import("../components/PerformanceChart"), { ssr: false });
 
 export default function DashboardPage() {
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+
+  useEffect(() => {
+    // 클라이언트 마운트 후 실시간 시간 표시 (SSR hydration 불일치 방지)
+    const format = () =>
+      new Date().toLocaleString("ko-KR", {
+        timeZone: "Asia/Seoul",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+
+    setLastUpdated(format());
+
+    const timer = setInterval(() => setLastUpdated(format()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       <Header />
@@ -20,7 +42,13 @@ export default function DashboardPage() {
             포트폴리오 현황
           </h1>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            2026년 4월 28일 &mdash; 마지막 업데이트: 오후 12:29 (KST)
+            마지막 업데이트:{" "}
+            {lastUpdated ?? (
+              <span className="inline-block w-48 animate-pulse rounded bg-slate-200 dark:bg-slate-700">
+                &nbsp;
+              </span>
+            )}{" "}
+            (KST)
           </p>
         </div>
 
