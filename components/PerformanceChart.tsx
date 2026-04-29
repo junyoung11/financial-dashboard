@@ -137,9 +137,9 @@ export default function PerformanceChart() {
         </div>
       </div>
 
-      <div className="h-64">
-        <canvas ref={canvasRef} />
-      </div>
+      <div className="h-64" style={{ position: "relative", height: "16rem" }}>
+              <canvas ref={canvasRef} />
+            </div>
     </div>
   );
 }

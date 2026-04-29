@@ -160,9 +160,9 @@ export default function StockChart() {
         </div>
       </div>
 
-      <div className="h-72">
-        <canvas ref={canvasRef} />
-      </div>
+      <div className="h-72" style={{ position: "relative", height: "18rem" }}>
+              <canvas ref={canvasRef} />
+            </div>
     </div>
   );
 }

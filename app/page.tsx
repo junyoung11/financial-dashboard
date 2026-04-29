@@ -1,8 +1,12 @@
+"use client";
+
+import dynamic from "next/dynamic";
 import Header from "../components/Header";
 import PortfolioCards from "../components/PortfolioCards";
-import StockChart from "../components/StockChart";
-import AssetAllocationChart from "../components/AssetAllocationChart";
-import PerformanceChart from "../components/PerformanceChart";
+
+const StockChart = dynamic(() => import("../components/StockChart"), { ssr: false });
+const AssetAllocationChart = dynamic(() => import("../components/AssetAllocationChart"), { ssr: false });
+const PerformanceChart = dynamic(() => import("../components/PerformanceChart"), { ssr: false });
 
 export default function DashboardPage() {
   return (
@@ -16,7 +20,7 @@ export default function DashboardPage() {
             포트폴리오 현황
           </h1>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            마지막 업데이트: {new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })}
+            2026년 4월 28일 &mdash; 마지막 업데이트: 오후 12:29 (KST)
           </p>
         </div>
 

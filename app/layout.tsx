@@ -3,7 +3,7 @@ import "./globals.css";
 import { ThemeProvider } from "../lib/theme-context";
 
 export const metadata: Metadata = {
-  title: "금융 데모 만들기",
+  title: "FinDash – 금융 분석 대시보드",
   description: "Next.js 기반 금융 분석 대시보드 데모",
 };
 
